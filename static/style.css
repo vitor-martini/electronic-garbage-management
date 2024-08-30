@@ -10,11 +10,11 @@ h1, h2 {
 .form-container {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: flex-end; /* Alinha os itens pelo final, para garantir que os botões fiquem alinhados */
+    gap: 10px; /* Adiciona um espaço entre os dois containers */
 }
 
 form {
-    margin-bottom: 20px;
     display: flex;
     gap: 10px;
 }
@@ -22,6 +22,7 @@ form {
 .report-container {
     display: flex;
     gap: 10px;
+    align-items: flex-end; /* Alinha os itens pelo final, assim como no formulário */
 }
 
 input, button {
@@ -35,6 +36,7 @@ button {
     color: white;
     border: none;
     cursor: pointer;
+    padding: 10px 20px; /* Adiciona um padding extra nos botões para uniformidade */
 }
 
 button:hover {
@@ -83,7 +85,8 @@ td:nth-child(4) {
 
 td:nth-child(5) {
     width: 40px; /* Largura mínima para o ícone de lixeira */
-    text-align: center; /* Centraliza o ícone na célula */
+    text-align: center; /* Centraliza o ícone na célula */text-align: center; /* Centraliza o conteúdo horizontalmente */
+    vertical-align: middle; /* Centraliza o conteúdo verticalmente */
 }
 
 /* Estilo para o botão de lixeira */
@@ -91,8 +94,14 @@ td:nth-child(5) {
     background-color: #e74c3c; /* Cor de fundo vermelho */
     border: none;
     cursor: pointer;
-    padding: 5px;
+    padding: 0; /* Remove o padding para que o botão tenha o mesmo tamanho da imagem */
+    width: 30px; /* Define uma largura fixa para o botão */
+    height: 30px; /* Define uma altura fixa para o botão */
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 4px;
+    margin: 0 auto; /* Centraliza o botão horizontalmente */
 }
 
 .excluir-btn:hover {
@@ -103,9 +112,7 @@ td:nth-child(5) {
 .trash-icon {
     width: 20px;
     height: 20px;
-    cursor: pointer;
-    opacity: 0.9;
-    transition: opacity 0.3s;
+    pointer-events: none; /* Faz com que o clique seja registrado no botão, não na imagem */
     filter: brightness(0) invert(1); /* Faz o ícone SVG ficar branco */
 }
 
