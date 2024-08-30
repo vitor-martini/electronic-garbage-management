@@ -1,10 +1,8 @@
 import psycopg2
-import urllib.parse as up  # Importando urllib.parse e referenciando como 'up'
+import urllib.parse as up  
 
-# URL pública do banco de dados
 DATABASE_URL = "postgresql://postgres:jbDIZVcVbOVZmiYkNNYDHDsZEHcQGxYU@junction.proxy.rlwy.net:27379/railway"
 
-# Parseando a URL para obter os componentes de conexão
 up.uses_netloc.append("postgres")
 url = up.urlparse(DATABASE_URL)
 

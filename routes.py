@@ -1,10 +1,9 @@
 from flask import Blueprint, request, jsonify, send_file
 import uuid
-from db import get_db_connection, get_db_cursor  # Importando as funções de conexão
+from db import get_db_connection, get_db_cursor  
 import pandas as pd
 from io import BytesIO
 
-# Criação do blueprint para as rotas
 routes = Blueprint('routes', __name__)
 
 @routes.route('/produtos', methods=['GET'])
@@ -39,7 +38,6 @@ def excluir_produto(id):
     conn.close()
     return jsonify({"message": "Produto excluído com sucesso"}), 200
 
-# Rota para extrair relatório
 @routes.route('/extrair-relatorio', methods=['GET'])
 def extrair_relatorio():
     start_date = request.args.get('start_date')
@@ -55,16 +53,12 @@ def extrair_relatorio():
     df = pd.read_sql(query, conn, params=[start_date, end_date])
     conn.close()
 
-    # Renomear as colunas
     df.columns = ['ID', 'Nome', 'Valor', 'Data Saída']
 
-    # Formatar a data no formato "dd/mm/yyyy"
     df['Data Saída'] = pd.to_datetime(df['Data Saída']).dt.strftime('%d/%m/%Y')
 
-    # Substituir vírgulas por pontos e converter o campo 'Valor' para número (float)
     df['Valor'] = df['Valor'].str.replace(',', '.').astype(float)
 
-    # Gerar o Excel em memória
     output = BytesIO()
     writer = pd.ExcelWriter(output, engine='xlsxwriter')
     df.to_excel(writer, index=False, sheet_name='Relatório')
