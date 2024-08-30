@@ -37,10 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function formatarData(dataString) {
-        const data = new Date(dataString);
-        const dia = String(data.getDate()).padStart(2, '0');
-        const mes = String(data.getMonth() + 1).padStart(2, '0'); // Janeiro é 0!
-        const ano = data.getFullYear();
+        const [ano, mes, dia] = dataString.split('-');
         return `${dia}/${mes}/${ano}`;
     }
     
@@ -164,5 +161,34 @@ document.addEventListener('DOMContentLoaded', function() {
     showLoading();
     carregarProdutos().finally(() => {
         hideLoading();  // Esconde o loading após o carregamento inicial dos produtos
+    });
+
+    document.getElementById('extract-report').addEventListener('click', function() {
+        const startDate = document.getElementById('start_date').value;
+        const endDate = document.getElementById('end_date').value;
+
+        if (!startDate || !endDate) {
+            showToast("Por favor, selecione as datas de início e fim!", true);
+            return;
+        }
+
+        showLoading();
+
+        fetch(`/extrair-relatorio?start_date=${startDate}&end_date=${endDate}`)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(new Blob([blob]));
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `relatorio_${startDate}_a_${endDate}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                showToast("Relatório gerado com sucesso!");
+            })
+            .finally(() => {
+                hideLoading();
+            });
     });
 });

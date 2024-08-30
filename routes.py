@@ -1,6 +1,8 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_file
 import uuid
 from db import get_db_connection, get_db_cursor  # Importando as funções de conexão
+import pandas as pd
+from io import BytesIO
 
 # Criação do blueprint para as rotas
 routes = Blueprint('routes', __name__)
@@ -36,3 +38,37 @@ def excluir_produto(id):
     conn.commit()
     conn.close()
     return jsonify({"message": "Produto excluído com sucesso"}), 200
+
+# Rota para extrair relatório
+@routes.route('/extrair-relatorio', methods=['GET'])
+def extrair_relatorio():
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    conn = get_db_connection()
+    query = """
+        SELECT public_id, name, value, disposal_date
+        FROM products
+        WHERE disposal_date BETWEEN %s AND %s
+        ORDER BY disposal_date
+    """
+    df = pd.read_sql(query, conn, params=[start_date, end_date])
+    conn.close()
+
+    # Renomear as colunas
+    df.columns = ['ID', 'Nome', 'Valor', 'Data Saída']
+
+    # Formatar a data no formato "dd/mm/yyyy"
+    df['Data Saída'] = pd.to_datetime(df['Data Saída']).dt.strftime('%d/%m/%Y')
+
+    # Substituir vírgulas por pontos e converter o campo 'Valor' para número (float)
+    df['Valor'] = df['Valor'].str.replace(',', '.').astype(float)
+
+    # Gerar o Excel em memória
+    output = BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    df.to_excel(writer, index=False, sheet_name='Relatório')
+    writer.close()
+    output.seek(0)
+
+    return send_file(output, download_name=f'relatorio_{start_date}_a_{end_date}.xlsx', as_attachment=True)
