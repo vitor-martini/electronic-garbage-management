@@ -1,7 +1,11 @@
 import psycopg2
-import urllib.parse as up  
+import urllib.parse as up
+from dotenv import load_dotenv
+import os
 
-DATABASE_URL = "postgresql://postgres:jbDIZVcVbOVZmiYkNNYDHDsZEHcQGxYU@junction.proxy.rlwy.net:27379/railway"
+load_dotenv()
+
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 up.uses_netloc.append("postgres")
 url = up.urlparse(DATABASE_URL)
